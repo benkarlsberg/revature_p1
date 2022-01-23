@@ -1,0 +1,16 @@
+- Database Connection
+	- Read Properties Configuration File
+	- JDBC Data Connection Utility
+
+- Java entity class -> Create statement in SQL
+	- Private Field -> Column
+	- Cardinality
+		- One to One
+		- One to Many
+		- Many to Many
+	- JDBC Logic
+
+- get() -> Select
+- add() -> insert into
+- remove() -> delete
+- put() -> upload
