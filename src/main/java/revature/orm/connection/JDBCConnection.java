@@ -1,6 +1,12 @@
 package revature.orm.connection;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -26,8 +32,14 @@ public class JDBCConnection {
             // establish new connection
             Properties props = new Properties();
             try {
+                //get path to connection.properties in resources folder
+                URL res = JDBCConnection.class.getClassLoader().getResource("connection.properties");
+                File file = Paths.get(res.toURI()).toFile();
+                String absolutePath = file.getAbsolutePath();
+                //System.out.println(absolutePath);
+                InputStream input = new FileInputStream(absolutePath);
 
-                props.load(JDBCConnection.class.getClassLoader().getResourceAsStream("connection.properties"));
+                props.load(input);
                 // props.load(new FileReader("src/main/resources/connection.properties"));
 
                 String endpoint = props.getProperty("endpoint");
@@ -39,7 +51,7 @@ public class JDBCConnection {
 
                 conn = DriverManager.getConnection(url, username, password);
 
-            } catch (IOException | SQLException e) {
+            } catch (IOException | SQLException | URISyntaxException e) {
                 e.printStackTrace();
             }
         }
