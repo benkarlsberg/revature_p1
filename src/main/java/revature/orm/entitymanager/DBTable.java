@@ -22,7 +22,7 @@ public class DBTable<E> {
     public E get(int primaryKey){
         return null;
     }
-    public List<E> get(Predicate... predicate){
+    public List<E> get(String... condition){
         return null;
     }
 }
