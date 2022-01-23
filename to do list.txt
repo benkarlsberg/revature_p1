@@ -14,3 +14,8 @@
 - add() -> insert into
 - remove() -> delete
 - put() -> upload
+- execute(sqlStatement)
+
+
+
+- Transaction control (TCP)
