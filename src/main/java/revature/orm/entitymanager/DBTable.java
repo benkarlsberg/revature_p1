@@ -92,8 +92,25 @@ public class DBTable<E> {
     //args paramter
 
     //Select * from student where id=1, age>10
-    public List<E> get(String... condition){
-       // List<String> conditions = new ArrayList<>(condition.)
-        return null;
+    public ResultSet get(String... condition) throws SQLException {
+        List<String> conditions = new ArrayList<String>(condition.length);
+        for (String s: condition) conditions.add(s);
+//        for (String s: conditions){
+//            System.out.println(s);
+//        }
+
+        String sqlStatement = "select * from "+ clazz.getSimpleName().toLowerCase()+" where "+conditions.get(0);
+        if (conditions.size()>1){
+            for (int i = 1; i < conditions.size(); i++) {
+                sqlStatement+=" and "+conditions.get(i);
+            }
+        }
+        //sqlStatement="SELECT * FROM student";
+        System.out.println(sqlStatement);
+        PreparedStatement ps = conn.prepareStatement(sqlStatement);
+        ResultSet rs =ps.executeQuery();
+        return rs;
     }
+
+
 }
