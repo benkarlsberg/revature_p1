@@ -6,6 +6,7 @@ import revature.orm.connection.JDBCConnection;
 
 import java.lang.reflect.Field;
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -92,6 +93,7 @@ public class DBTable<E> {
 
     //Select * from student where id=1, age>10
     public List<E> get(String... condition){
+       // List<String> conditions = new ArrayList<>(condition.)
         return null;
     }
 }
