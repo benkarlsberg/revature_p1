@@ -2,20 +2,22 @@ package revature.orm.entitymanager;
 
 import revature.orm.annotation.PrimaryKey;
 import revature.orm.annotation.Serial;
+import revature.orm.connection.JDBCConnection;
 
 import java.lang.reflect.Field;
+import java.sql.*;
 import java.util.List;
 import java.util.function.Predicate;
 
 //responsible for Create and CRUD operation for one table
 public class DBTable<E> {
     Class clazz;
-
+    private Connection conn = JDBCConnection.getConnection();
     public DBTable(Class clazz) {
         this.clazz = clazz;
     }
 
-    public boolean createTable(){
+    public boolean createTable() throws SQLException {
         Field[] fields = clazz.getDeclaredFields();
 
         String sqlStatement = "CREATE TABLE "+ clazz.getSimpleName()+"(";
@@ -42,6 +44,31 @@ public class DBTable<E> {
         }
         sqlStatement+=")";
         System.out.println(sqlStatement);
+        //check if table exists, then no need to create
+        if(!tableExists(conn,clazz.getSimpleName())) {
+            return executeStatement(sqlStatement);
+        }else{
+            return true;
+        }
+    }
+
+
+    boolean tableExists(Connection connection, String tableName) throws SQLException {
+        DatabaseMetaData meta = connection.getMetaData();
+        ResultSet resultSet = meta.getTables(null, null, tableName.toLowerCase(), new String[] {"TABLE"});
+
+        return resultSet.next();
+    }
+
+    private boolean executeStatement(String sqlStatement){
+        try {
+            Statement stmt = conn.createStatement();
+            stmt.executeUpdate(sqlStatement);
+            //System.out.println(clazz.getSimpleName()+" table created");
+            return true;
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
         return false;
     }
     // print out sql statement
