@@ -1,6 +1,7 @@
 package revature.orm.testing.models;
 
 import revature.orm.annotation.Entity;
+import revature.orm.annotation.ForeignKey;
 import revature.orm.annotation.PrimaryKey;
 import revature.orm.annotation.Serial;
 
@@ -14,9 +15,16 @@ public class Student {
     private String lastName;
     private int age;
 
-    public Student(String firstName, String lastName) {
+    @ForeignKey(entity="School",field="id")
+    private int schoolId;
+
+    private School school;
+
+    public Student(int id, String firstName, String lastName, int age) {
+        this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
+        this.age = age;
     }
 
     public String getFirstName() {
@@ -33,5 +41,21 @@ public class Student {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
     }
 }

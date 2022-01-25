@@ -1,12 +1,17 @@
 package revature.orm.entitymanager;
 
+import revature.orm.annotation.ForeignKey;
 import revature.orm.annotation.PrimaryKey;
 import revature.orm.annotation.Serial;
 import revature.orm.connection.JDBCConnection;
+import revature.orm.testing.models.Student;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -14,8 +19,11 @@ import java.util.function.Predicate;
 public class DBTable<E> {
     Class clazz;
     private Connection conn = JDBCConnection.getConnection();
-    public DBTable(Class clazz) {
+    public DBTable(Class clazz) throws SQLException, ClassNotFoundException {
+
         this.clazz = clazz;
+        createTable();
+        addForeignKey();
     }
 
     public boolean createTable() throws SQLException {
@@ -46,16 +54,63 @@ public class DBTable<E> {
         sqlStatement+=")";
         System.out.println(sqlStatement);
         //check if table exists, then no need to create
-        if(!tableExists(conn,clazz.getSimpleName())) {
+        if(!tableExists(clazz.getSimpleName())) {
             return executeStatement(sqlStatement);
         }else{
             return true;
         }
     }
 
+    public boolean addForeignKey() throws SQLException, ClassNotFoundException {
+        for (Field field: clazz.getDeclaredFields()) {
+            if(field.isAnnotationPresent(ForeignKey.class)){
+                ForeignKey foreignKey = field.getAnnotation(ForeignKey.class);
+                String entity = foreignKey.entity();
+                String f = foreignKey.field();
+                String sqlStatement= "ALTER TABLE " +clazz.getSimpleName()+
+                        " ADD FOREIGN KEY ("+field.getName()+") REFERENCES "+entity+"("+f+")";
+                if(tableExists(entity)){
+                    executeStatement(sqlStatement);
+                    return true;
+                }else{
+                    DBTable<Object> objectDBTable= new DBTable<>(Class.forName(clazz.getPackage().getName().toString()+"."+entity));
+                    executeStatement(sqlStatement);
+                    return true;
+                }
 
-    boolean tableExists(Connection connection, String tableName) throws SQLException {
-        DatabaseMetaData meta = connection.getMetaData();
+            }
+        }
+        return false;
+    }
+
+    public void checkFields() throws SQLException {
+        Statement stmt = conn.createStatement();
+        ResultSet rs = stmt.executeQuery("Select * from "+clazz.getSimpleName());
+        ResultSetMetaData rsMetaData = rs.getMetaData();
+        int count = rsMetaData.getColumnCount();
+        List<String> metaData = new ArrayList<>();
+        List<String> fieldName = new ArrayList<>();
+        for(int i = 1; i<=count; i++) {
+            metaData.add(rsMetaData.getColumnName(i));
+        }
+
+        Field[] fields = clazz.getDeclaredFields();
+
+
+        for (int i = 0; i < fields.length; i++) {
+            fieldName.add(fields[i].getName());
+        }
+
+        //if a field in metaData is not in entity model ->alter drop column
+        for (int i = 0; i < metaData.size(); i++) {
+
+            //}
+        }
+        //if a field in entity model is not in table ->alter add column
+    }
+
+    boolean tableExists(String tableName) throws SQLException {
+        DatabaseMetaData meta = conn.getMetaData();
         ResultSet resultSet = meta.getTables(null, null, tableName.toLowerCase(), new String[] {"TABLE"});
 
         return resultSet.next();
@@ -73,7 +128,14 @@ public class DBTable<E> {
         return false;
     }
     // print out sql statement
-    public E insertInto(E entity){
+    public E insertInto(E entity) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        Field[]  fields = clazz.getDeclaredFields();
+        for (int i = 0; i < fields.length; i++) {
+            System.out.println(fields[i].getName());
+        }
+        Method method = entity.getClass().getMethod("getAge");
+        int age = (int) method.invoke(entity);
+        System.out.println(age);
         return entity;
     }
 
@@ -90,14 +152,15 @@ public class DBTable<E> {
     //aaaaaa
 
     //args paramter
+    private E objectBuilder(ResultSet rs){
+        return null;
+    }
 
     //Select * from student where id=1, age>10
     public ResultSet get(String... condition) throws SQLException {
         List<String> conditions = new ArrayList<String>(condition.length);
         for (String s: condition) conditions.add(s);
-//        for (String s: conditions){
-//            System.out.println(s);
-//        }
+
 
         String sqlStatement = "select * from "+ clazz.getSimpleName().toLowerCase()+" where "+conditions.get(0);
         if (conditions.size()>1){
@@ -113,4 +176,15 @@ public class DBTable<E> {
     }
 
 
+    public List<Field> getPrimaryKeys(Class clazz) {
+        List<Field> primaryFields = new ArrayList<>();
+        Field[] fields = clazz.getDeclaredFields();
+        for (int i = 0; i < fields.length; i++) {
+            if(fields[i].isAnnotationPresent(PrimaryKey.class)){
+                primaryFields.add(fields[i]);
+
+            }
+        }
+        return primaryFields;
+    }
 }
