@@ -15,15 +15,17 @@ public class Student {
     private String lastName;
     private int age;
 
-    @ForeignKey(entity="School",field="id")
-    private int schoolId;
+//    @ForeignKey(entity="School",field="id")
+//    private int schoolId;
+    @ForeignKey(field="id")
+    private School school;
 
-    public int getSchoolId() {
-        return schoolId;
+    public School getSchool() {
+        return school;
     }
 
-    public void setSchoolId(int schoolId) {
-        this.schoolId = schoolId;
+    public void setSchool(School school) {
+        this.school = school;
     }
 
     public Student() {
@@ -75,7 +77,6 @@ public class Student {
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", age=" + age +
-                ", schoolId=" + schoolId +
                 '}';
     }
 }

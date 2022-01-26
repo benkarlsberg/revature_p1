@@ -19,14 +19,14 @@ import java.util.function.Predicate;
 public class DBTable<E> {
     Class clazz;
     private Connection conn = JDBCConnection.getConnection();
-    public DBTable(Class clazz) throws SQLException, ClassNotFoundException {
+    public DBTable(Class clazz) throws SQLException, ClassNotFoundException, NoSuchFieldException {
 
         this.clazz = clazz;
         createTable();
         addForeignKey();
     }
 
-    public boolean createTable() throws SQLException {
+    public boolean createTable() throws SQLException, ClassNotFoundException, NoSuchFieldException {
         Field[] fields = clazz.getDeclaredFields();
 
         String sqlStatement = "CREATE TABLE "+ clazz.getSimpleName()+"(";
@@ -35,6 +35,20 @@ public class DBTable<E> {
             if(fields[i].isAnnotationPresent(Serial.class))
             {
                 sqlStatement += fields[i].getName()+" SERIAL,";
+            }else if(fields[i].isAnnotationPresent(ForeignKey.class))
+            {
+                ForeignKey foreignKey = fields[i].getAnnotation(ForeignKey.class);
+                String fieldName = foreignKey.field();
+                Class foreignKeyClass = Class.forName(fields[i].getType().getName());
+                String type = foreignKeyClass.getDeclaredField(fieldName).getType().getSimpleName();
+                //System.out.println(type);
+                if(type.equals("int"))
+                {
+                    sqlStatement += fields[i].getName()+" int,";
+                }else if(type.equals("class java.lang.String"))
+                {
+                    sqlStatement += fields[i].getName()+" varchar(255),";
+                }
             }else if(fields[i].getType().toString().equals("class java.lang.String"))
             {
                 sqlStatement += fields[i].getName()+" varchar(255),";
@@ -61,18 +75,20 @@ public class DBTable<E> {
         }
     }
 
-    public boolean addForeignKey() throws SQLException, ClassNotFoundException {
+    public boolean addForeignKey() throws SQLException, ClassNotFoundException, NoSuchFieldException {
         for (Field field: clazz.getDeclaredFields()) {
             if(field.isAnnotationPresent(ForeignKey.class)){
                 ForeignKey foreignKey = field.getAnnotation(ForeignKey.class);
-                String entity = foreignKey.entity();
+                String entity = field.getType().getSimpleName();
                 String f = foreignKey.field();
                 String sqlStatement= "ALTER TABLE " +clazz.getSimpleName()+
                         " ADD FOREIGN KEY ("+field.getName()+") REFERENCES "+entity+"("+f+")";
+                System.out.println(sqlStatement);
                 if(tableExists(entity)){
                     executeStatement(sqlStatement);
                     return true;
                 }else{
+
                     DBTable<Object> objectDBTable= new DBTable<>(Class.forName(clazz.getPackage().getName().toString()+"."+entity));
                     executeStatement(sqlStatement);
                     return true;
