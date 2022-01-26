@@ -14,7 +14,25 @@ public class Student {
     private String firstName;
     private String lastName;
     private int age;
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
+    public int getGrade() {
+        return grade;
+    }
+
+    public void setGrade(int grade) {
+        this.grade = grade;
+    }
+
     private String gender;
+    private int grade;
 
 //    @ForeignKey(entity="School",field="id")
 //    private int schoolId;

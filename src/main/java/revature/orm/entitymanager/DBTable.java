@@ -29,35 +29,37 @@ public class DBTable<E> {
     public boolean createTable() throws SQLException, ClassNotFoundException, NoSuchFieldException {
         Field[] fields = clazz.getDeclaredFields();
 
-        String sqlStatement = "CREATE TABLE "+ clazz.getSimpleName()+"(";
+        String sqlStatement = "CREATE TABLE "+ clazz.getSimpleName()+"( ";
         for (int i = 0; i < fields.length; i++) {
            // System.out.println(fields[i].isAnnotationPresent(Serial.class));
-            if(fields[i].isAnnotationPresent(Serial.class))
-            {
-                sqlStatement += fields[i].getName()+" SERIAL,";
-            }else if(fields[i].isAnnotationPresent(ForeignKey.class))
-            {
-                ForeignKey foreignKey = fields[i].getAnnotation(ForeignKey.class);
-                String fieldName = foreignKey.field();
-                Class foreignKeyClass = Class.forName(fields[i].getType().getName());
-                String type = foreignKeyClass.getDeclaredField(fieldName).getType().getSimpleName();
-                //System.out.println(type);
-                if(type.equals("int"))
-                {
-                    sqlStatement += fields[i].getName()+" int,";
-                }else if(type.equals("class java.lang.String"))
-                {
-                    sqlStatement += fields[i].getName()+" varchar(255),";
-                }
-            }else if(fields[i].getType().toString().equals("class java.lang.String"))
-            {
-                sqlStatement += fields[i].getName()+" varchar(255),";
-            }else if(fields[i].getType().toString().equals("int"))
-            {
-                sqlStatement += fields[i].getName()+" int,";
-            }else if(fields[i].getType().toString().equals("float") || fields[i].getType().equals("double")){
-                sqlStatement += fields[i].getName()+" float,";
-            }
+//            if(fields[i].isAnnotationPresent(Serial.class))
+//            {
+//                sqlStatement += fields[i].getName()+" SERIAL,";
+//            }else if(fields[i].isAnnotationPresent(ForeignKey.class))
+//            {
+//                ForeignKey foreignKey = fields[i].getAnnotation(ForeignKey.class);
+//                String fieldName = foreignKey.field();
+//                Class foreignKeyClass = Class.forName(fields[i].getType().getName());
+//                String type = foreignKeyClass.getDeclaredField(fieldName).getType().getSimpleName();
+//                //System.out.println(type);
+//                if(type.equals("int"))
+//                {
+//                    sqlStatement += fields[i].getName()+" int,";
+//                }else if(type.equals("class java.lang.String"))
+//                {
+//                    sqlStatement += fields[i].getName()+" varchar(255),";
+//                }
+//            }else if(fields[i].getType().toString().equals("class java.lang.String"))
+//            {
+//                sqlStatement += fields[i].getName()+" varchar(255),";
+//            }else if(fields[i].getType().toString().equals("int"))
+//            {
+//                sqlStatement += fields[i].getName()+" int,";
+//            }else if(fields[i].getType().toString().equals("float") || fields[i].getType().equals("double")){
+//                sqlStatement += fields[i].getName()+" float,";
+//            }
+            String type= " "+sqlTypeConverter(fields[i])+",";
+            sqlStatement+= fields[i].getName()+type;
         }
         sqlStatement+= "PRIMARY KEY (";
         for (int i = 0; i < fields.length; i++) {
@@ -311,5 +313,38 @@ public class DBTable<E> {
             }
         }
         return primaryFields;
+    }
+
+    public String sqlTypeConverter(Field field) throws ClassNotFoundException, NoSuchFieldException {
+        if(field.isAnnotationPresent(Serial.class))
+        {
+            return "SERIAL";
+        }else if(field.isAnnotationPresent(ForeignKey.class))
+        {
+            ForeignKey foreignKey = field.getAnnotation(ForeignKey.class);
+            String fieldName = foreignKey.field();
+            Class foreignKeyClass = Class.forName(field.getType().getName());
+            String type = foreignKeyClass.getDeclaredField(fieldName).getType().getSimpleName();
+            //System.out.println(type);
+            if(type.equals("int"))
+            {
+                return "int";
+            }else if(type.equals("class java.lang.String"))
+            {
+                return "varchar(255)";
+            }
+        }else if(field.getType().toString().equals("class java.lang.String"))
+        {
+            return "varchar(255)";
+        }else if(field.getType().toString().equals("int"))
+        {
+            return "int";
+        }else if(field.getType().toString().equals("float") || field.getType().equals("double")){
+            return "double";
+        }else if(field.getType().toString().equals("class java.sql.Date"))
+        {
+            return "DATE";
+        }
+        return "";
     }
 }
