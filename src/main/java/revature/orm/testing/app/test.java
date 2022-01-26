@@ -15,7 +15,7 @@ public class test {
     public static void main(String[] args) throws SQLException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, ClassNotFoundException, NoSuchFieldException, InstantiationException {
         DBTable<Student> studentDB = new DBTable<>(Student.class);
         studentDB.checkFields();
-        //studentDB.checkFields();
+        studentDB.checkFields();
         //studentDB.createTable();
         //
         //studentDB.addForeignKey();
@@ -35,7 +35,6 @@ public class test {
 //        List<Field> primaryKeys= studentDB.getPrimaryKeys(Student.class);
 //        System.out.println(primaryKeys.get(0).getName());
 //        System.out.println(primaryKeys.get(0).getType());
-
 
     }
 }
