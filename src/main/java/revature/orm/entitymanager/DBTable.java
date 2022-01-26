@@ -146,19 +146,87 @@ public class DBTable<E> {
     public E delete(int primaryKey){
         return null;
     }
-    public E get(int primaryKey){
+
+    public E get(int primaryKey) throws SQLException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException, NoSuchFieldException {
+        Field[] fields = clazz.getDeclaredFields();
+        int idField = 0;
+        StringBuilder sqlStatement = new StringBuilder("SELECT * FROM " + clazz.getSimpleName() + " WHERE ");
+
+        for (int i = 0; i < fields.length; i++) {
+            // System.out.println(fields[i].isAnnotationPresent(Serial.class));
+            if (fields[i].isAnnotationPresent(PrimaryKey.class)) {
+                idField = i;
+            }
+        }
+        sqlStatement.append(fields[idField].getName()).append("=").append(primaryKey);
+
+//        Method method = entity.getClass().getMethod(getMethod("get" + fields[i].getName()));
+//        int id = (int)method.invoke(entity);
+        if(tableExists(clazz.getSimpleName())) {
+//            System.out.println(sqlStatement);
+            PreparedStatement ps = conn.prepareStatement(String.valueOf(sqlStatement));
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()){
+
+                // Object e = new Object();
+                E e = (E) clazz.getConstructor().newInstance();
+                for (int i = 0; i < fields.length; i++) {
+                    String methodName = getMethod("set" + fields[i].getName());
+                    //System.out.println(methodName);
+                    Method method = e.getClass().getMethod(methodName,fields[i].getType());
+                    if(fields[i].getType().toString().equals("int")){
+                        method.invoke(e, rs.getInt(i+1));
+                    }else if(fields[i].getType().toString().equals("class java.lang.String")){
+                        method.invoke(e, rs.getString(i+1));
+                    }
+
+                }
+                return e;
+            }
+        }else {
+            return null;
+        }
         return null;
     }
-    //aaaaaa
 
     //args paramter
-    private E objectBuilder(ResultSet rs){
-        return null;
-    }
+    private E objectBuilder(ResultSet rs) throws NoSuchFieldException, SQLException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+        Field[] fields = clazz.getDeclaredFields();
+       // Object e = new Object();
+        E e = (E) clazz.getConstructor().newInstance();
+        for (int i = 0; i < fields.length; i++) {
+            String methodName = getMethod("set" + fields[i].getName());
 
+            Method method = e.getClass().getMethod(methodName,fields[i].getType());
+            if(fields[i].getType().toString().equals("int")){
+                method.invoke(e, rs.getInt(i+1));
+            }else if(fields[i].getType().toString().equals("class java.lang.String")){
+                method.invoke(e, rs.getString(i+1));
+            }
+
+        }
+        return e;
+    }
+    public String getMethod(String methodName) {
+
+        Method[] methods = clazz.getDeclaredMethods();
+        for (Method method : methods) {
+            String name = method.getName();
+            if (name.equalsIgnoreCase(methodName)) {
+                return name;
+            } else if (name.equalsIgnoreCase(methodName)) {
+                return name;
+            }
+        }
+        return "";
+
+    }
     //Select * from student where id=1, age>10
-    public ResultSet get(String... condition) throws SQLException {
+    public List<E> get(String... condition) throws SQLException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException, NoSuchFieldException {
         List<String> conditions = new ArrayList<String>(condition.length);
+        List<E> list = new ArrayList<>();
+        Field[] fields = clazz.getDeclaredFields();
         for (String s: condition) conditions.add(s);
 
 
@@ -172,7 +240,24 @@ public class DBTable<E> {
         System.out.println(sqlStatement);
         PreparedStatement ps = conn.prepareStatement(sqlStatement);
         ResultSet rs =ps.executeQuery();
-        return rs;
+
+        while (rs.next()){
+
+            E e = (E) clazz.getConstructor().newInstance();
+            for (int i = 0; i < fields.length; i++) {
+                String methodName = getMethod("set" + fields[i].getName());
+
+                Method method = e.getClass().getMethod(methodName,fields[i].getType());
+                if(fields[i].getType().toString().equals("int")){
+                    method.invoke(e, rs.getInt(i+1));
+                }else if(fields[i].getType().toString().equals("class java.lang.String")){
+                    method.invoke(e, rs.getString(i+1));
+                }
+
+            }
+            list.add(e);
+        }
+        return list;
     }
 
 
@@ -182,6 +267,7 @@ public class DBTable<E> {
         for (int i = 0; i < fields.length; i++) {
             if(fields[i].isAnnotationPresent(PrimaryKey.class)){
                 primaryFields.add(fields[i]);
+
 
             }
         }

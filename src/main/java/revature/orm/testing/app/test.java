@@ -12,11 +12,13 @@ import java.sql.SQLException;
 import java.util.List;
 
 public class test {
-    public static void main(String[] args) throws SQLException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, ClassNotFoundException {
+    public static void main(String[] args) throws SQLException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, ClassNotFoundException, NoSuchFieldException, InstantiationException {
         DBTable<Student> studentDB = new DBTable<>(Student.class);
         studentDB.checkFields();
         //studentDB.createTable();
-//        ResultSet rs = studentDB.get("age>11","lastname like '%a%'");
+        //
+        List<Student> list = studentDB.get("true");
+        System.out.println(list);
 //        while(rs.next()){
 //            System.out.println(rs.getString("lastname"));
 //        }
@@ -28,9 +30,10 @@ public class test {
 //            }
 //        }
         //studentDB.addForeignKey();
-        List<Field> primaryKeys= studentDB.getPrimaryKeys(Student.class);
-        System.out.println(primaryKeys.get(0).getName());
-        System.out.println(primaryKeys.get(0).getType());
+//        List<Field> primaryKeys= studentDB.getPrimaryKeys(Student.class);
+//        System.out.println(primaryKeys.get(0).getName());
+//        System.out.println(primaryKeys.get(0).getType());
+
 
     }
 }

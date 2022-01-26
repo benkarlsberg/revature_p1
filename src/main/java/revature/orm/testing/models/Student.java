@@ -18,7 +18,16 @@ public class Student {
     @ForeignKey(entity="School",field="id")
     private int schoolId;
 
-    private School school;
+    public int getSchoolId() {
+        return schoolId;
+    }
+
+    public void setSchoolId(int schoolId) {
+        this.schoolId = schoolId;
+    }
+
+    public Student() {
+    }
 
     public Student(int id, String firstName, String lastName, int age) {
         this.id = id;
@@ -57,5 +66,16 @@ public class Student {
 
     public void setAge(int age) {
         this.age = age;
+    }
+
+    @Override
+    public String toString() {
+        return "Student{" +
+                "id=" + id +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", age=" + age +
+                ", schoolId=" + schoolId +
+                '}';
     }
 }
