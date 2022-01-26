@@ -2,6 +2,7 @@ package revature.orm.testing.app;
 
 import revature.orm.annotation.ForeignKey;
 import revature.orm.entitymanager.DBTable;
+import revature.orm.testing.models.School;
 import revature.orm.testing.models.Student;
 
 import java.lang.annotation.Annotation;
@@ -10,54 +11,40 @@ import java.lang.reflect.InvocationTargetException;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.List;
 
 public class test {
-    public static void main(String[] args) throws SQLException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, ClassNotFoundException, NoSuchFieldException, InstantiationException {
+    public static void main(String[] args) throws SQLException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, ClassNotFoundException, NoSuchFieldException, InstantiationException, ParseException {
+        //Testing Create, addForeignKey, checkField()
         DBTable<Student> studentDB = new DBTable<>(Student.class);
-        studentDB.checkFields();
-        studentDB.checkFields();
-        //studentDB.createTable();
-        //
-        //studentDB.addForeignKey();
-//        List<Student> list = studentDB.get("true");
-//        System.out.println(list);
-//        while(rs.next()){
-//            System.out.println(rs.getString("lastname"));
-//        }
-       // studentDB.insertInto(new Student(1,"first","last",10));
-//        for (Field field: Student.class.getDeclaredFields()) {
-//            if(field.isAnnotationPresent(ForeignKey.class)){
-//                ForeignKey foreignKey = field.getAnnotation(ForeignKey.class);
-//                System.out.println(foreignKey.entity());
-//            }
-//        }
-        //studentDB.addForeignKey();
-//        List<Field> primaryKeys= studentDB.getPrimaryKeys(Student.class);
-//        System.out.println(primaryKeys.get(0).getName());
-//        System.out.println(primaryKeys.get(0).getType());
 
-        Student student1 = new Student("first", "last", 10, Date.valueOf("2021-01-25"));
-        Student student2 = new Student("first", "last", 10, Date.valueOf("2021-01-25"));
-        Student student3 = new Student("first", "last", 10, Date.valueOf("2021-01-25"));
 
-        // retrieves array of enum
-        System.out.println(Arrays.toString(Student.grade.values()));
+        //Testing insertInto()
+        DBTable<School> schoolDB = new DBTable<>(School.class);
+        //schoolDB.insertInto(new School("NDSU"));
+        School school =schoolDB.get(2);
+        //System.out.println(school);
+        Student student = new Student("First","Last",20,Date.valueOf("2000-11-20"),"Male",10,school);
+        //System.out.println(student.getSchool());
+        studentDB.insertInto(student);
 
-        //testing insertInto
-        studentDB.insertInto(student1);
-        studentDB.insertInto(student2);
-        studentDB.insertInto(student3);
+        //Testing get(int id);
+        System.out.println(schoolDB.get(2));
+        System.out.println(studentDB.get(2));
+//
+//        //Testing get(String.. condition);
+//        System.out.println(schoolDB.get("true"));
+//
+//        //Testing delete(int id);
+        System.out.println(studentDB.delete(2));
 
-        // testing update
-        student1.setAge(100);
-        studentDB.update(1, student1);
-
-        // testing get
-        System.out.println(studentDB.get(1));
-
-        // testing delete
-        System.out.println(studentDB.delete(1));
+        //Testing update
+        student = studentDB.get(1);
+        student.setAge(100);
+        System.out.println(studentDB.update(1,student));
+        //Testing
     }
 }

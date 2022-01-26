@@ -12,13 +12,9 @@ public class Student {
     @PrimaryKey
     @Serial
     private int id;
-
     private String firstName;
     private String lastName;
     private int age;
-    public enum grade {
-        freshman, sophmore, junior, senior
-    };
     private Date enrollDate;
 
     public String getGender() {
@@ -40,8 +36,7 @@ public class Student {
     private String gender;
     private int grade;
 
-//    @ForeignKey(entity="School",field="id")
-//    private int schoolId;
+
     @ForeignKey(field="id")
     private School school;
 
@@ -56,20 +51,25 @@ public class Student {
     public Student() {
     }
 
-
-    public Student(int id, String firstName, String lastName, int age, Date enrollDate) {
+    public Student(int id, String firstName, String lastName, int age, Date enrollDate, String gender, int grade, School school) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.age = age;
         this.enrollDate = enrollDate;
+        this.gender = gender;
+        this.grade = grade;
+        this.school = school;
     }
 
-    public Student(String firstName, String lastName, int age, Date enrollDate) {
+    public Student(String firstName, String lastName, int age, Date enrollDate, String gender, int grade, School school) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.age = age;
         this.enrollDate = enrollDate;
+        this.gender = gender;
+        this.grade = grade;
+        this.school = school;
     }
 
     public String getFirstName() {
