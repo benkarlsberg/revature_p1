@@ -56,7 +56,7 @@ public class Student {
     public Student() {
     }
 
-    public Student(int id, String firstName, String lastName, int age) {
+
     public Student(int id, String firstName, String lastName, int age, Date enrollDate) {
         this.id = id;
         this.firstName = firstName;
@@ -112,6 +112,7 @@ public class Student {
                 ", lastName='" + lastName + '\'' +
                 ", age=" + age +
                 '}';
+    }
     public Date getEnrollDate() {
         return enrollDate;
     }

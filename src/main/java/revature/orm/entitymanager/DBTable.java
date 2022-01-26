@@ -226,7 +226,7 @@ public class DBTable<E> {
         }
         sqlStatement.append(");");
 
-        if(tableExists(conn,clazz.getSimpleName())) {
+        if(tableExists(clazz.getSimpleName())) {
             System.out.println(sqlStatement);
             executeStatement(sqlStatement.toString());
             return entity;
@@ -275,7 +275,7 @@ public class DBTable<E> {
 
         sqlStatement.append(" WHERE ").append(fields[idField].getName()).append("=").append(primaryKey).append(";");
 
-        if(tableExists(conn,clazz.getSimpleName())) {
+        if(tableExists(clazz.getSimpleName())) {
             System.out.println(sqlStatement);
             executeStatement(sqlStatement.toString());
             return entity;
@@ -299,7 +299,7 @@ public class DBTable<E> {
         }
         sqlStatement.append(" WHERE ").append(fields[idField].getName()).append("=").append(primaryKey).append(" RETURNING *;");
 
-        if(tableExists(conn,clazz.getSimpleName())) {
+        if(tableExists(clazz.getSimpleName())) {
             System.out.println(sqlStatement);
             PreparedStatement ps = conn.prepareStatement(String.valueOf(sqlStatement));
             ResultSet rs = ps.executeQuery();
@@ -310,35 +310,35 @@ public class DBTable<E> {
             return null;
         }
     }
-    public ResultSet get(int primaryKey) throws SQLException {
-        Field[] fields = clazz.getDeclaredFields();
-        int idField = 0;
-        StringBuilder sqlStatement = new StringBuilder("SELECT * FROM " + clazz.getSimpleName() + " WHERE ");
+//    public ResultSet get(int primaryKey) throws SQLException {
+//        Field[] fields = clazz.getDeclaredFields();
+//        int idField = 0;
+//        StringBuilder sqlStatement = new StringBuilder("SELECT * FROM " + clazz.getSimpleName() + " WHERE ");
+//
+//        for (int i = 0; i < fields.length; i++) {
+//            // System.out.println(fields[i].isAnnotationPresent(Serial.class));
+//            if (fields[i].isAnnotationPresent(Serial.class)) {
+//                idField = i;
+//            }
+//        }
+//        sqlStatement.append(fields[idField].getName()).append("=").append(primaryKey);
+//
+////        Method method = entity.getClass().getMethod(getMethod("get" + fields[i].getName()));
+////        int id = (int)method.invoke(entity);
+//        if(tableExists(conn,clazz.getSimpleName())) {
+//            System.out.println(sqlStatement);
+//            PreparedStatement ps = conn.prepareStatement(String.valueOf(sqlStatement));
+//            ResultSet rs = ps.executeQuery();
+//            return rs;
+//        }else {
+//            return null;
+//        }
+//    }
 
-        for (int i = 0; i < fields.length; i++) {
-            // System.out.println(fields[i].isAnnotationPresent(Serial.class));
-            if (fields[i].isAnnotationPresent(Serial.class)) {
-                idField = i;
-            }
-        }
-        sqlStatement.append(fields[idField].getName()).append("=").append(primaryKey);
-
-//        Method method = entity.getClass().getMethod(getMethod("get" + fields[i].getName()));
-//        int id = (int)method.invoke(entity);
-        if(tableExists(conn,clazz.getSimpleName())) {
-            System.out.println(sqlStatement);
-            PreparedStatement ps = conn.prepareStatement(String.valueOf(sqlStatement));
-            ResultSet rs = ps.executeQuery();
-            return rs;
-        }else {
-            return null;
-        }
-    }
-
-    private E buildObject(ResultSet rs) throws SQLException {
-        // ObjectType instance = Activator.CreateInstance<ObjectType>();
-        return null;
-    }
+//    private E buildObject(ResultSet rs) throws SQLException {
+//        // ObjectType instance = Activator.CreateInstance<ObjectType>();
+//        return null;
+//    }
 
     public E get(int primaryKey) throws SQLException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException, NoSuchFieldException {
         Field[] fields = clazz.getDeclaredFields();
@@ -401,20 +401,20 @@ public class DBTable<E> {
         }
         return e;
     }
-    public String getMethod(String methodName) {
-
-        Method[] methods = clazz.getDeclaredMethods();
-        for (Method method : methods) {
-            String name = method.getName();
-            if (name.equalsIgnoreCase(methodName)) {
-                return name;
-            } else if (name.equalsIgnoreCase(methodName)) {
-                return name;
-            }
-        }
-        return "";
-
-    }
+//    public String getMethod(String methodName) {
+//
+//        Method[] methods = clazz.getDeclaredMethods();
+//        for (Method method : methods) {
+//            String name = method.getName();
+//            if (name.equalsIgnoreCase(methodName)) {
+//                return name;
+//            } else if (name.equalsIgnoreCase(methodName)) {
+//                return name;
+//            }
+//        }
+//        return "";
+//
+//    }
     //Select * from student where id=1, age>10
     public List<E> get(String... condition) throws SQLException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException, NoSuchFieldException {
         List<String> conditions = new ArrayList<String>(condition.length);
