@@ -14,6 +14,7 @@ import java.util.List;
 public class test {
     public static void main(String[] args) throws SQLException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, ClassNotFoundException, NoSuchFieldException, InstantiationException {
         DBTable<Student> studentDB = new DBTable<>(Student.class);
+        studentDB.checkFields();
         //studentDB.checkFields();
         //studentDB.createTable();
         //

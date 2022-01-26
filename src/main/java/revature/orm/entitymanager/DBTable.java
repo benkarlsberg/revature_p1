@@ -107,22 +107,45 @@ public class DBTable<E> {
         List<String> metaData = new ArrayList<>();
         List<String> fieldName = new ArrayList<>();
         for(int i = 1; i<=count; i++) {
-            metaData.add(rsMetaData.getColumnName(i));
+            metaData.add(rsMetaData.getColumnName(i).toLowerCase());
         }
 
         Field[] fields = clazz.getDeclaredFields();
 
 
         for (int i = 0; i < fields.length; i++) {
-            fieldName.add(fields[i].getName());
+            fieldName.add(fields[i].getName().toLowerCase());
         }
 
-        //if a field in metaData is not in entity model ->alter drop column
-        for (int i = 0; i < metaData.size(); i++) {
 
-            //}
+//        System.out.println("metadata");
+//        System.out.println(metaData);
+//        System.out.println("fields");
+//        System.out.println(fieldName);
+        //if a field in metaData doesn't contain in entity model ->alter drop column
+        for (int i = 0; i < metaData.size(); i++) {
+            if(!fieldName.contains(metaData.get(i))){
+                String sqlStatement = "ALTER TABLE "+clazz.getSimpleName()+" DROP COLUMN "+metaData.get(i);
+                System.out.println(sqlStatement);
+                executeStatement(sqlStatement);
+            }
         }
         //if a field in entity model is not in table ->alter add column
+        for (int i = 0; i < fieldName.size(); i++) {
+            if(!metaData.contains(fieldName.get(i))){
+                String type =fields[i].getType().getSimpleName();
+                if(type.equals("int"))
+                {
+                    type= "int";
+                }else if(type.equals("String"))
+                {
+                    type="varchar(255)";
+                }
+                String sqlStatement = "ALTER TABLE "+clazz.getSimpleName()+" ADD COLUMN "+fieldName.get(i)+" "+type;
+                System.out.println(sqlStatement);
+                executeStatement(sqlStatement);
+            }
+        }
     }
 
     boolean tableExists(String tableName) throws SQLException {

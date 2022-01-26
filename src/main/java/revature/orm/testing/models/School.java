@@ -8,4 +8,5 @@ public class School {
     @PrimaryKey
     private int id;
     private String name;
+
 }
