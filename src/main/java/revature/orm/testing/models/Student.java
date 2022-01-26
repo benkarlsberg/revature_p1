@@ -4,6 +4,8 @@ import revature.orm.annotation.Entity;
 import revature.orm.annotation.PrimaryKey;
 import revature.orm.annotation.Serial;
 
+import java.sql.Date;
+
 @Entity
 public class Student {
     @PrimaryKey
@@ -13,18 +15,24 @@ public class Student {
     private String firstName;
     private String lastName;
     private int age;
+    public enum grade {
+        freshman, sophmore, junior, senior
+    };
+    private Date enrollDate;
 
-    public Student(int id, String firstName, String lastName, int age) {
+    public Student(int id, String firstName, String lastName, int age, Date enrollDate) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.age = age;
+        this.enrollDate = enrollDate;
     }
 
-    public Student(String firstName, String lastName, int age) {
+    public Student(String firstName, String lastName, int age, Date enrollDate) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.age = age;
+        this.enrollDate = enrollDate;
     }
 
     public String getFirstName() {
@@ -57,5 +65,13 @@ public class Student {
 
     public void setAge(int age) {
         this.age = age;
+    }
+
+    public Date getEnrollDate() {
+        return enrollDate;
+    }
+
+    public void setEnrollDate(Date enrollDate) {
+        this.enrollDate = enrollDate;
     }
 }

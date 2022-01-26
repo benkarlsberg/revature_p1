@@ -6,10 +6,7 @@ import revature.orm.connection.JDBCConnection;
 
 import java.lang.reflect.*;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.function.Predicate;
 
 //responsible for Create and CRUD operation for one table
 public class DBTable<E> {
@@ -34,8 +31,12 @@ public class DBTable<E> {
             }else if(fields[i].getType().toString().equals("int"))
             {
                 sqlStatement += fields[i].getName()+" int,";
-            }else if(fields[i].getType().toString().equals("float") || fields[i].getType().toString().equals("double")){
+            }else if(fields[i].getType().toString().equals("float") || fields[i].getType().toString().equals("double"))
+            {
                 sqlStatement += fields[i].getName()+" float,";
+            }else if(fields[i].getType().toString().equals("class java.sql.Date"))
+            {
+                sqlStatement += fields[i].getName() + " DATE,";
             }
         }
         sqlStatement+= "PRIMARY KEY (";
@@ -112,7 +113,20 @@ public class DBTable<E> {
                 Method method = entity.getClass().getMethod(getMethod("get" + fields[i].getName()));
                 int num = (int) method.invoke(entity);
                 sqlStatement.append(num);
+            }else if(fields[i].getType().toString().equals("class java.sql.Date")) {
+                Method method = entity.getClass().getMethod(getMethod("get" + fields[i].getName()));
+                Date date = (Date)method.invoke(entity);
+                sqlStatement.append("'").append(date).append("'");
             }
+//            }else if(fields[i].getType().toString().equals("enum")) {
+//                Method method = entity.getClass().getDeclaredMethod(getMethod("values"));
+//                enum lst = (enum)method.invoke(entity);
+//                sqlStatement.append(enum);
+//            }
+
+
+
+
             if (!((i+1) == fields.length)){
                 sqlStatement.append(", ");
             }
@@ -151,6 +165,12 @@ public class DBTable<E> {
                 Method method = entity.getClass().getMethod(getMethod("get" + fields[i].getName()));
                 int num = (int) method.invoke(entity);
                 sqlStatement.append(num);
+            }else if(fields[i].getType().toString().equals("class java.sql.Date"))
+            {
+                sqlStatement.append(fields[i].getName()).append("=");
+                Method method = entity.getClass().getMethod(getMethod("get" + fields[i].getName()));
+                Date date = (Date)method.invoke(entity);
+                sqlStatement.append("'").append(date).append("'");
             }
             if (i == 0) {
                 sqlStatement.append("");
