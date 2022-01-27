@@ -20,8 +20,6 @@ public class test {
     public static void main(String[] args) throws SQLException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, ClassNotFoundException, NoSuchFieldException, InstantiationException, ParseException {
         //Testing Create, addForeignKey, checkField()
         DBTable<Student> studentDB = new DBTable<>(Student.class);
-
-
         //Testing insertInto()
         DBTable<School> schoolDB = new DBTable<>(School.class);
         //schoolDB.insertInto(new School("NDSU"));

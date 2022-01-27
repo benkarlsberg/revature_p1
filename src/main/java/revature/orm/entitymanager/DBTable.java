@@ -4,15 +4,12 @@ import revature.orm.annotation.ForeignKey;
 import revature.orm.annotation.PrimaryKey;
 import revature.orm.annotation.Serial;
 import revature.orm.connection.JDBCConnection;
-import revature.orm.testing.models.School;
-import revature.orm.testing.models.Student;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 //responsible for Create and CRUD operation for one table
@@ -30,49 +27,22 @@ public class DBTable<E> {
     public boolean createTable() throws SQLException, ClassNotFoundException, NoSuchFieldException {
         Field[] fields = clazz.getDeclaredFields();
 
-        String sqlStatement = "CREATE TABLE "+ clazz.getSimpleName()+"( ";
-        for (int i = 0; i < fields.length; i++) {
-           // System.out.println(fields[i].isAnnotationPresent(Serial.class));
-//            if(fields[i].isAnnotationPresent(Serial.class))
-//            {
-//                sqlStatement += fields[i].getName()+" SERIAL,";
-//            }else if(fields[i].isAnnotationPresent(ForeignKey.class))
-//            {
-//                ForeignKey foreignKey = fields[i].getAnnotation(ForeignKey.class);
-//                String fieldName = foreignKey.field();
-//                Class foreignKeyClass = Class.forName(fields[i].getType().getName());
-//                String type = foreignKeyClass.getDeclaredField(fieldName).getType().getSimpleName();
-//                //System.out.println(type);
-//                if(type.equals("int"))
-//                {
-//                    sqlStatement += fields[i].getName()+" int,";
-//                }else if(type.equals("class java.lang.String"))
-//                {
-//                    sqlStatement += fields[i].getName()+" varchar(255),";
-//                }
-//            }else if(fields[i].getType().toString().equals("class java.lang.String"))
-//            {
-//                sqlStatement += fields[i].getName()+" varchar(255),";
-//            }else if(fields[i].getType().toString().equals("int"))
-//            {
-//                sqlStatement += fields[i].getName()+" int,";
-//            }else if(fields[i].getType().toString().equals("float") || fields[i].getType().equals("double")){
-//                sqlStatement += fields[i].getName()+" float,";
-//            }
-            String type= " "+sqlTypeConverter(fields[i])+",";
-            sqlStatement+= fields[i].getName()+type;
+        StringBuilder sqlStatement = new StringBuilder("CREATE TABLE " + clazz.getSimpleName() + "( ");
+        for (Field field : fields) {
+            String type = " " + sqlTypeConverter(field) + ",";
+            sqlStatement.append(field.getName()).append(type);
         }
-        sqlStatement+= "PRIMARY KEY (";
-        for (int i = 0; i < fields.length; i++) {
-            if(fields[i].isAnnotationPresent(PrimaryKey.class)){
-                sqlStatement+=fields[i].getName()+")";
+        sqlStatement.append("PRIMARY KEY (");
+        for (Field field : fields) {
+            if (field.isAnnotationPresent(PrimaryKey.class)) {
+                sqlStatement.append(field.getName()).append(")");
             }
         }
-        sqlStatement+=")";
+        sqlStatement.append(")");
         System.out.println(sqlStatement);
         //check if table exists, then no need to create
         if(!tableExists(clazz.getSimpleName())) {
-            return executeStatement(sqlStatement);
+            return executeStatement(sqlStatement.toString());
         }else{
             return true;
         }
@@ -91,8 +61,7 @@ public class DBTable<E> {
                     executeStatement(sqlStatement);
                     return true;
                 }else{
-
-                    DBTable<Object> objectDBTable= new DBTable<>(Class.forName(clazz.getPackage().getName().toString()+"."+entity));
+                    DBTable<Object> objectDBTable= new DBTable<>(Class.forName(clazz.getPackage().getName()+"."+entity));
                     executeStatement(sqlStatement);
                     return true;
                 }
@@ -114,21 +83,14 @@ public class DBTable<E> {
         }
 
         Field[] fields = clazz.getDeclaredFields();
-
-
-        for (int i = 0; i < fields.length; i++) {
-            fieldName.add(fields[i].getName().toLowerCase());
+        for (Field field : fields) {
+            fieldName.add(field.getName().toLowerCase());
         }
 
-
-//        System.out.println("metadata");
-//        System.out.println(metaData);
-//        System.out.println("fields");
-//        System.out.println(fieldName);
         //if a field in metaData doesn't contain in entity model ->alter drop column
-        for (int i = 0; i < metaData.size(); i++) {
-            if(!fieldName.contains(metaData.get(i))){
-                String sqlStatement = "ALTER TABLE "+clazz.getSimpleName()+" DROP COLUMN "+metaData.get(i);
+        for (String metaDatum : metaData) {
+            if (!fieldName.contains(metaDatum)) {
+                String sqlStatement = "ALTER TABLE " + clazz.getSimpleName() + " DROP COLUMN " + metaDatum;
                 System.out.println(sqlStatement);
                 executeStatement(sqlStatement);
             }
@@ -151,7 +113,7 @@ public class DBTable<E> {
         }
     }
 
-    boolean tableExists(String tableName) throws SQLException {
+    public boolean tableExists(String tableName) throws SQLException {
         DatabaseMetaData meta = conn.getMetaData();
         ResultSet resultSet = meta.getTables(null, null, tableName.toLowerCase(), new String[] {"TABLE"});
 
@@ -177,8 +139,6 @@ public class DBTable<E> {
             String name = method.getName();
             if (name.equalsIgnoreCase(methodName)) {
                 return name;
-            } else if (name.equalsIgnoreCase(methodName)) {
-                return name;
             }
         }
         return "";
@@ -189,10 +149,8 @@ public class DBTable<E> {
         Field[] fields = clazz.getDeclaredFields();
 
         StringBuilder sqlStatement = new StringBuilder("INSERT INTO " + clazz.getSimpleName() + " VALUES (");
-        //System.out.println(fields.length);
 
         for (int i = 0; i < fields.length; i++) {
-            // System.out.println(fields[i].isAnnotationPresent(Serial.class));
             if(fields[i].isAnnotationPresent(Serial.class))
             {
                 sqlStatement.append("default");
@@ -201,19 +159,14 @@ public class DBTable<E> {
                 ForeignKey foreignKey = fields[i].getAnnotation(ForeignKey.class);
                 String fieldName = foreignKey.field();
                 String foreignEntity = fields[i].getType().getName();
-                System.out.println(foreignEntity);
                 Class foreignClass = Class.forName(foreignEntity);
                 String type=foreignClass.getDeclaredField(fieldName).getType().getName();
 
-//                System.out.println("Field Name: "+fieldName+"Type: "+type+"Class: "+schoolClass);
                 if(type.equals("class java.lang.String"))
                 {
                     Method foreignMethod = foreignClass.getMethod(getMethod("get"+fieldName));
                     Method primaryMethod = clazz.getMethod(getMethod("get"+fields[i].getName()));
 
-                    //Object obj = primaryMethod.invoke(entity);
-                    System.out.println(primaryMethod.getName());
-                    System.out.println(primaryMethod.invoke(entity));
                     Object value = foreignMethod.invoke(primaryMethod.invoke(entity));
                     sqlStatement.append("'").append(value).append("'");
                 }else if(type.equals("int") || fields[i].getType().toString().equals("float") || fields[i].getType().toString().equals("double"))
@@ -221,9 +174,6 @@ public class DBTable<E> {
                     Method foreignMethod = foreignClass.getMethod(getMethod("get"+fieldName));
                     Method primaryMethod = clazz.getMethod(getMethod("get"+fields[i].getName()));
 
-                    //Object obj = primaryMethod.invoke(entity);
-                    System.out.println(primaryMethod.getName());
-                    System.out.println(primaryMethod.invoke(entity));
                     Object value = foreignMethod.invoke(primaryMethod.invoke(entity));
                     System.out.println(value);
                     sqlStatement.append(value);
@@ -244,9 +194,6 @@ public class DBTable<E> {
                 sqlStatement.append("'").append(date).append("'");
             }
 
-
-
-
             if (!((i+1) == fields.length)){
                 sqlStatement.append(", ");
             }
@@ -262,17 +209,39 @@ public class DBTable<E> {
         }
     }
 
-    public E update(int primaryKey, E entity) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, SQLException {
+    public E update(int primaryKey, E entity) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, SQLException, NoSuchFieldException, ClassNotFoundException {
         Field[] fields = clazz.getDeclaredFields();
         int idField = 0;
 
         StringBuilder sqlStatement = new StringBuilder("UPDATE " + clazz.getSimpleName() + " SET ");
 
         for (int i = 0; i < fields.length; i++) {
-            // System.out.println(fields[i].isAnnotationPresent(Serial.class));
             if(fields[i].isAnnotationPresent(Serial.class))
             {
                 idField = i;
+            } else if(fields[i].isAnnotationPresent(ForeignKey.class)) {
+                ForeignKey foreignKey = fields[i].getAnnotation(ForeignKey.class);
+                String fieldName = foreignKey.field();
+                String foreignEntity = fields[i].getType().getName();
+                Class foreignClass = Class.forName(foreignEntity);
+                String type = foreignClass.getDeclaredField(fieldName).getType().getName();
+
+                if (type.equals("class java.lang.String")) {
+                    Method foreignMethod = foreignClass.getMethod(getMethod("get" + fieldName));
+                    Method primaryMethod = clazz.getMethod(getMethod("get" + fields[i].getName()));
+
+                    Object value = foreignMethod.invoke(primaryMethod.invoke(entity));
+                    sqlStatement.append(fields[i].getName()).append("=");
+                    sqlStatement.append("'").append(value).append("'");
+                } else if (type.equals("int") || fields[i].getType().toString().equals("float") || fields[i].getType().toString().equals("double")) {
+                    Method foreignMethod = foreignClass.getMethod(getMethod("get" + fieldName));
+                    Method primaryMethod = clazz.getMethod(getMethod("get" + fields[i].getName()));
+
+                    Object value = foreignMethod.invoke(primaryMethod.invoke(entity));
+                    System.out.println(value);
+                    sqlStatement.append(fields[i].getName()).append("=");
+                    sqlStatement.append(value);
+                }
             } else if(fields[i].getType().toString().equals("class java.lang.String"))
             {
                 sqlStatement.append(fields[i].getName()).append("=");
@@ -354,10 +323,7 @@ public class DBTable<E> {
         }
         sqlStatement.append(fields[idField].getName()).append("=").append(primaryKey);
 
-//        Method method = entity.getClass().getMethod(getMethod("get" + fields[i].getName()));
-//        int id = (int)method.invoke(entity);
         if(tableExists(clazz.getSimpleName())) {
-//            System.out.println(sqlStatement);
             PreparedStatement ps = conn.prepareStatement(String.valueOf(sqlStatement));
             ResultSet rs = ps.executeQuery();
 
@@ -398,7 +364,6 @@ public class DBTable<E> {
                 sqlStatement+=" and "+conditions.get(i);
             }
         }
-        //sqlStatement="SELECT * FROM student";
         System.out.println(sqlStatement);
         PreparedStatement ps = conn.prepareStatement(sqlStatement);
         ResultSet rs =ps.executeQuery();
@@ -422,7 +387,6 @@ public class DBTable<E> {
         return list;
     }
 
-
     public List<Field> getPrimaryKeys(Class clazz) {
         List<Field> primaryFields = new ArrayList<>();
         Field[] fields = clazz.getDeclaredFields();
@@ -444,7 +408,6 @@ public class DBTable<E> {
             String fieldName = foreignKey.field();
             Class foreignKeyClass = Class.forName(field.getType().getName());
             String type = foreignKeyClass.getDeclaredField(fieldName).getType().getSimpleName();
-            //System.out.println(type);
             if(type.equals("int"))
             {
                 return "int";
