@@ -31,18 +31,19 @@ public class test {
 
         //Testing get(int id);
         System.out.println(schoolDB.get(2));
-        System.out.println(studentDB.get(2));
+        System.out.println(studentDB.get(3));
 //
 //        //Testing get(String.. condition);
 //        System.out.println(schoolDB.get("true"));
 //
 //        //Testing delete(int id);
-        System.out.println(studentDB.delete(2));
+        //System.out.println(studentDB.delete(2));
 
         //Testing update
-        student = studentDB.get(1);
+        student = studentDB.get(4);
         student.setAge(100);
-        System.out.println(studentDB.update(1,student));
+        System.out.println(studentDB.update(4,student));
+        System.out.println(studentDB.get("true"));
         //Testing
     }
 }

@@ -111,8 +111,13 @@ public class Student {
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", age=" + age +
+                ", enrollDate=" + enrollDate +
+                ", gender='" + gender + '\'' +
+                ", grade=" + grade +
+                ", school=" + school +
                 '}';
     }
+
     public Date getEnrollDate() {
         return enrollDate;
     }

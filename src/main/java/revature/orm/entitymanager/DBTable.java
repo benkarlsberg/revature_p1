@@ -8,6 +8,7 @@ import revature.orm.connection.JDBCConnection;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -236,7 +237,9 @@ public class DBTable<E> {
                 } else if (type.equals("int") || fields[i].getType().toString().equals("float") || fields[i].getType().toString().equals("double")) {
                     Method foreignMethod = foreignClass.getMethod(getMethod("get" + fieldName));
                     Method primaryMethod = clazz.getMethod(getMethod("get" + fields[i].getName()));
-
+//                    System.out.println("===================");
+//                    System.out.println(primaryMethod.invoke(entity));
+//                    System.out.println(foreignMethod.invoke(primaryMethod.invoke(entity)));
                     Object value = foreignMethod.invoke(primaryMethod.invoke(entity));
                     System.out.println(value);
                     sqlStatement.append(fields[i].getName()).append("=");
@@ -280,7 +283,7 @@ public class DBTable<E> {
         }
     }
 
-    public E delete(int primaryKey) throws SQLException, NoSuchMethodException, NoSuchFieldException, InstantiationException, IllegalAccessException, InvocationTargetException {
+    public E delete(int primaryKey) throws SQLException, NoSuchMethodException, NoSuchFieldException, InstantiationException, IllegalAccessException, InvocationTargetException, ClassNotFoundException {
         Field[] fields = clazz.getDeclaredFields();
         int idField = 0;
         E e = get(primaryKey);
@@ -310,7 +313,7 @@ public class DBTable<E> {
     }
 
 
-    public E get(int primaryKey) throws SQLException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException, NoSuchFieldException {
+    public E get(int primaryKey) throws SQLException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException, NoSuchFieldException, ClassNotFoundException {
         Field[] fields = clazz.getDeclaredFields();
         int idField = 0;
         StringBuilder sqlStatement = new StringBuilder("SELECT * FROM " + clazz.getSimpleName() + " WHERE ");
@@ -330,15 +333,28 @@ public class DBTable<E> {
             while (rs.next()){
 
                 // Object e = new Object();
+
                 E e = (E) clazz.getConstructor().newInstance();
                 for (int i = 0; i < fields.length; i++) {
                     String methodName = getMethod("set" + fields[i].getName());
                     //System.out.println(methodName);
                     Method method = e.getClass().getMethod(methodName,fields[i].getType());
-                    if(fields[i].getType().toString().equals("int")){
+                    if(fields[i].isAnnotationPresent(ForeignKey.class)){
+                        Object value = rs.getObject(i+1);
+
+                        Object fkDB = new DBTable<>(Class.forName(fields[i].getType().getName()));
+                        Method fkMethod = fkDB.getClass().getDeclaredMethod("get",int.class);
+                        Object fbObj = fkMethod.invoke(fkDB,value);
+
+                        method.invoke(e, fbObj);
+                    }else if(fields[i].getType().toString().equals("int")){
                         method.invoke(e, rs.getInt(i+1));
                     }else if(fields[i].getType().toString().equals("class java.lang.String")){
                         method.invoke(e, rs.getString(i+1));
+                    }else if(fields[i].getType().toString().equals("class java.sql.Date"))
+                    {
+                        System.out.println("date="+rs.getDate(i+1));
+                        method.invoke(e, rs.getDate(i+1));
                     }
 
                 }
@@ -351,7 +367,7 @@ public class DBTable<E> {
     }
 
     //Select * from student where id=1, age>10
-    public List<E> get(String... condition) throws SQLException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException, NoSuchFieldException {
+    public List<E> get(String... condition) throws SQLException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException, NoSuchFieldException, ClassNotFoundException {
         List<String> conditions = new ArrayList<String>(condition.length);
         List<E> list = new ArrayList<>();
         Field[] fields = clazz.getDeclaredFields();
@@ -373,12 +389,24 @@ public class DBTable<E> {
             E e = (E) clazz.getConstructor().newInstance();
             for (int i = 0; i < fields.length; i++) {
                 String methodName = getMethod("set" + fields[i].getName());
-
+                //System.out.println(methodName);
                 Method method = e.getClass().getMethod(methodName,fields[i].getType());
-                if(fields[i].getType().toString().equals("int")){
+                if(fields[i].isAnnotationPresent(ForeignKey.class)){
+                    Object value = rs.getObject(i+1);
+
+                    Object fkDB = new DBTable<>(Class.forName(fields[i].getType().getName()));
+                    Method fkMethod = fkDB.getClass().getDeclaredMethod("get",int.class);
+                    Object fbObj = fkMethod.invoke(fkDB,value);
+
+                    method.invoke(e, fbObj);
+                }else if(fields[i].getType().toString().equals("int")){
                     method.invoke(e, rs.getInt(i+1));
                 }else if(fields[i].getType().toString().equals("class java.lang.String")){
                     method.invoke(e, rs.getString(i+1));
+                }else if(fields[i].getType().toString().equals("class java.sql.Date"))
+                {
+                    System.out.println("date="+rs.getDate(i+1));
+                    method.invoke(e, rs.getDate(i+1));
                 }
 
             }
