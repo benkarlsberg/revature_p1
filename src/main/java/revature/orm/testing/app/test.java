@@ -22,28 +22,31 @@ public class test {
         DBTable<Student> studentDB = new DBTable<>(Student.class);
         //Testing insertInto()
         DBTable<School> schoolDB = new DBTable<>(School.class);
-        //schoolDB.insertInto(new School("NDSU"));
+        schoolDB.insertInto(new School("NDSU"));
         School school =schoolDB.get(2);
         //System.out.println(school);
-        Student student = new Student("First","Last",20,Date.valueOf("2000-11-20"),"Male",10,school);
-        //System.out.println(student.getSchool());
-        studentDB.insertInto(student);
+//        Student student = new Student("First","Last",20,Date.valueOf("2000-11-20"),"Male",10,school);
+//        //System.out.println(student.getSchool());
+//        studentDB.insertInto(student);
 
+        Student student1 = new Student("First","Last",20, Date.valueOf("2000-11-20"),"Male",10,school);
+        studentDB.insertInto(student1);
         //Testing get(int id);
-        System.out.println(schoolDB.get(2));
-        System.out.println(studentDB.get(3));
+//        System.out.println(schoolDB.get(2));
+//        System.out.println(studentDB.get(3));
+////
+////        //Testing get(String.. condition);
+////        System.out.println(schoolDB.get("true"));
+////
+////        //Testing delete(int id);
+//        //System.out.println(studentDB.delete(2));
 //
-//        //Testing get(String.. condition);
-//        System.out.println(schoolDB.get("true"));
-//
-//        //Testing delete(int id);
-        //System.out.println(studentDB.delete(2));
-
-        //Testing update
-        student = studentDB.get(4);
-        student.setAge(100);
-        System.out.println(studentDB.update(4,student));
-        System.out.println(studentDB.get("true"));
+//        //Testing update
+//        student = studentDB.get(4);
+//        student.setAge(100);
+//        System.out.println(studentDB.update(4,student));
+//        System.out.println(studentDB.get("true"));
         //Testing
+
     }
 }

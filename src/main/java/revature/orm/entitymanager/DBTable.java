@@ -121,7 +121,7 @@ public class DBTable<E> {
         return resultSet.next();
     }
 
-    private boolean executeStatement(String sqlStatement){
+    public boolean executeStatement(String sqlStatement){
         try {
             Statement stmt = conn.createStatement();
             stmt.executeUpdate(sqlStatement);

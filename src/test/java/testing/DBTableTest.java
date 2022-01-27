@@ -25,9 +25,8 @@ public class DBTableTest {
 
         studentDB = new DBTable<>(Student.class);
         schoolDB = new DBTable<>(School.class);
-        school = new School("BERKELEY");
+        school = new School(1,"BERKELEY");
         student = new Student("First","Last",20, Date.valueOf("2000-11-20"),"Male",10,school);
-
     }
 
     @Test
@@ -48,12 +47,18 @@ public class DBTableTest {
 
         schoolDB.insertInto(school);
         studentDB.insertInto(student);
+        schoolDB.insertInto(school);
+        studentDB.insertInto(student);
+        schoolDB.insertInto(school);
+        studentDB.insertInto(student);
+        schoolDB.insertInto(school);
+        studentDB.insertInto(student);
 
     }
 
     @Test
     @Order(3)
-    public void get() throws SQLException, NoSuchFieldException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+    public void get() throws SQLException, NoSuchFieldException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException, ClassNotFoundException {
 
         schoolDB.get(1);
         studentDB.get(1);
@@ -70,8 +75,10 @@ public class DBTableTest {
 
     @Test
     @Order(5)
-    public void delete() throws SQLException, NoSuchFieldException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-        studentDB.delete(1);
-        schoolDB.delete(1);
+    public void delete() throws SQLException, NoSuchFieldException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException, ClassNotFoundException {
+        studentDB.delete(3);
+        schoolDB.delete(3);
+        studentDB.executeStatement("drop table if exists student;");
+        studentDB.executeStatement("drop table if exists school;");
     }
 }
