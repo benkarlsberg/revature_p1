@@ -27,6 +27,7 @@ public class DBTable<E> {
 
     public boolean createTable() throws SQLException, ClassNotFoundException, NoSuchFieldException {
         Field[] fields = clazz.getDeclaredFields();
+        fields = fieldFilter(fields);
 
         StringBuilder sqlStatement = new StringBuilder("CREATE TABLE " + clazz.getSimpleName() + "( ");
         for (Field field : fields) {
@@ -84,6 +85,7 @@ public class DBTable<E> {
         }
 
         Field[] fields = clazz.getDeclaredFields();
+        fields = fieldFilter(fields);
         for (Field field : fields) {
             fieldName.add(field.getName().toLowerCase());
         }
@@ -148,6 +150,7 @@ public class DBTable<E> {
 
     public E insertInto(E entity) throws SQLException, NoSuchMethodException, InvocationTargetException, IllegalAccessException, NoSuchFieldException, ClassNotFoundException {
         Field[] fields = clazz.getDeclaredFields();
+        fields = fieldFilter(fields);
 
         StringBuilder sqlStatement = new StringBuilder("INSERT INTO " + clazz.getSimpleName() + " VALUES (");
 
@@ -212,6 +215,7 @@ public class DBTable<E> {
 
     public E update(int primaryKey, E entity) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, SQLException, NoSuchFieldException, ClassNotFoundException {
         Field[] fields = clazz.getDeclaredFields();
+        fields = fieldFilter(fields);
         int idField = 0;
 
         StringBuilder sqlStatement = new StringBuilder("UPDATE " + clazz.getSimpleName() + " SET ");
@@ -285,6 +289,7 @@ public class DBTable<E> {
 
     public E delete(int primaryKey) throws SQLException, NoSuchMethodException, NoSuchFieldException, InstantiationException, IllegalAccessException, InvocationTargetException, ClassNotFoundException {
         Field[] fields = clazz.getDeclaredFields();
+        fields = fieldFilter(fields);
         int idField = 0;
         E e = get(primaryKey);
         StringBuilder sqlStatement = new StringBuilder("DELETE FROM " + clazz.getSimpleName());
@@ -315,6 +320,7 @@ public class DBTable<E> {
 
     public E get(int primaryKey) throws SQLException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException, NoSuchFieldException, ClassNotFoundException {
         Field[] fields = clazz.getDeclaredFields();
+        fields = fieldFilter(fields);
         int idField = 0;
         StringBuilder sqlStatement = new StringBuilder("SELECT * FROM " + clazz.getSimpleName() + " WHERE ");
 
@@ -371,6 +377,7 @@ public class DBTable<E> {
         List<String> conditions = new ArrayList<String>(condition.length);
         List<E> list = new ArrayList<>();
         Field[] fields = clazz.getDeclaredFields();
+        fields = fieldFilter(fields);
         for (String s: condition) conditions.add(s);
 
 
@@ -418,6 +425,7 @@ public class DBTable<E> {
     public List<Field> getPrimaryKeys(Class clazz) {
         List<Field> primaryFields = new ArrayList<>();
         Field[] fields = clazz.getDeclaredFields();
+        fields = fieldFilter(fields);
         for (int i = 0; i < fields.length; i++) {
             if(fields[i].isAnnotationPresent(PrimaryKey.class)){
                 primaryFields.add(fields[i]);
@@ -457,4 +465,25 @@ public class DBTable<E> {
         }
         return "";
     }
+
+    // removes __$lineHits$__ for code coverage testing
+    public Field[] fieldFilter(Field[] fields) {
+        if (fields.length == 0) {
+            return fields;
+        }
+        Field[] fieldCopy = new Field[fields.length];
+        for (int i = 0; i < fields.length; i++) {
+            if (fields[i].getName().equals("__$lineHits$__")) {
+                fieldCopy = new Field[fields.length - 1];
+                break;
+            }
+        }
+        for (int i = 0; i < fields.length; i++) {
+            if (!fields[i].getName().equals("__$lineHits$__")) {
+                fieldCopy[i] = fields[i];
+            }
+        }
+        return fieldCopy;
+    }
+
 }
