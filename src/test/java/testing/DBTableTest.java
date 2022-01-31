@@ -1,7 +1,9 @@
 package testing;
 
 import org.junit.jupiter.api.*;
+import org.omg.CORBA.portable.ApplicationException;
 import revature.orm.entitymanager.DBTable;
+import revature.orm.testing.logging.MyLogger;
 import revature.orm.testing.models.School;
 import revature.orm.testing.models.Student;
 
@@ -23,6 +25,7 @@ public class DBTableTest {
     @BeforeAll
     public static void before() throws SQLException, NoSuchFieldException, ClassNotFoundException {
 
+        MyLogger.logger.info("Testing Started");
         studentDB = new DBTable<>(Student.class);
         schoolDB = new DBTable<>(School.class);
         school = new School(1,"BERKELEY");
@@ -63,18 +66,34 @@ public class DBTableTest {
         schoolDB.get(1);
         studentDB.get(1);
         schoolDB.get("true");
+
+        //student = new Student("First","Last",20, Date.valueOf("2000-11-20"),"Male",10,school);
+        assertEquals(studentDB.get(1).toString(), "Student{id=1, firstName='First', lastName='Last', age=20, enrollDate=2000-11-20" +
+                ", gender='Male', grade=10, school=School{id=1, name='BERKELEY'}}");
     }
 
     @Test
     @Order(4)
-    public void update() throws SQLException, NoSuchFieldException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException, ClassNotFoundException {
-        student = studentDB.get(1);
-        student.setAge(100);
-        studentDB.update(1,student);
+    public void testException() {
+        SQLException thrown = Assertions.assertThrows(SQLException.class, () -> {
+            studentDB.get("Hello");
+        }, "SQLException expected");
     }
 
     @Test
     @Order(5)
+    public void update() throws SQLException, NoSuchFieldException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException, ClassNotFoundException {
+        student = studentDB.get(1);
+        student.setFirstName("Emma");
+        student.setLastName("Watson");
+        student.setEnrollDate(Date.valueOf("2020-11-20"));
+        student.setGender("Female");
+        student.setAge(29);
+        studentDB.update(1,student);
+    }
+
+    @Test
+    @Order(6)
     public void delete() throws SQLException, NoSuchFieldException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException, ClassNotFoundException {
         studentDB.delete(3);
         schoolDB.delete(3);

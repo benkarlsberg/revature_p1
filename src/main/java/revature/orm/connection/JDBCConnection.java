@@ -57,11 +57,4 @@ public class JDBCConnection {
         }
         return conn;
     }
-
-    /* TESTING PURPOSES !: */
-    public static void main(String[] args) {
-        Connection conn1 = getConnection();
-        System.out.println(conn1);
-    }
-
 }
