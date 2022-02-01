@@ -422,17 +422,17 @@ public class DBTable<E> {
         return list;
     }
 
-    public List<Field> getPrimaryKeys(Class clazz) {
-        List<Field> primaryFields = new ArrayList<>();
-        Field[] fields = clazz.getDeclaredFields();
-        fields = fieldFilter(fields);
-        for (int i = 0; i < fields.length; i++) {
-            if(fields[i].isAnnotationPresent(PrimaryKey.class)){
-                primaryFields.add(fields[i]);
-            }
-        }
-        return primaryFields;
-    }
+//    public List<Field> getPrimaryKeys(Class clazz) {
+//        List<Field> primaryFields = new ArrayList<>();
+//        Field[] fields = clazz.getDeclaredFields();
+//        fields = fieldFilter(fields);
+//        for (int i = 0; i < fields.length; i++) {
+//            if(fields[i].isAnnotationPresent(PrimaryKey.class)){
+//                primaryFields.add(fields[i]);
+//            }
+//        }
+//        return primaryFields;
+//    }
 
     public String sqlTypeConverter(Field field) throws ClassNotFoundException, NoSuchFieldException {
         if(field.isAnnotationPresent(Serial.class))

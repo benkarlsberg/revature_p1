@@ -1,7 +1,6 @@
 package testing;
 
 import org.junit.jupiter.api.*;
-import org.omg.CORBA.portable.ApplicationException;
 import revature.orm.entitymanager.DBTable;
 import revature.orm.testing.logging.MyLogger;
 import revature.orm.testing.models.School;
