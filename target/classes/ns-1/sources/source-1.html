@@ -1,0 +1,165 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > JDBCConnection</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/highlight-idea.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.pack.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">revature.orm.connection</a>
+</div>
+
+<h1>Coverage Summary for Class: JDBCConnection (revature.orm.connection)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">JDBCConnection</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    66.7%
+  </span>
+  <span class="absValue">
+    (2/3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    83.3%
+  </span>
+  <span class="absValue">
+    (15/18)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<div class="sourceCode" id="sourceCode"><i class="no-highlight">1</i>&nbsp;package revature.orm.connection;
+<i class="no-highlight">2</i>&nbsp;
+<i class="no-highlight">3</i>&nbsp;import java.io.File;
+<i class="no-highlight">4</i>&nbsp;import java.io.FileInputStream;
+<i class="no-highlight">5</i>&nbsp;import java.io.IOException;
+<i class="no-highlight">6</i>&nbsp;import java.io.InputStream;
+<i class="no-highlight">7</i>&nbsp;import java.net.URISyntaxException;
+<i class="no-highlight">8</i>&nbsp;import java.net.URL;
+<i class="no-highlight">9</i>&nbsp;import java.nio.file.Paths;
+<i class="no-highlight">10</i>&nbsp;import java.sql.Connection;
+<i class="no-highlight">11</i>&nbsp;import java.sql.DriverManager;
+<i class="no-highlight">12</i>&nbsp;import java.sql.SQLException;
+<i class="no-highlight">13</i>&nbsp;import java.util.Properties;
+<i class="no-highlight">14</i>&nbsp;
+<b class="nc"><i class="no-highlight">15</i>&nbsp;public class JDBCConnection {</b>
+<i class="no-highlight">16</i>&nbsp;
+<i class="no-highlight">17</i>&nbsp;
+<i class="no-highlight">18</i>&nbsp;    /*
+<i class="no-highlight">19</i>&nbsp;    Singleton - only want one instance of object
+<i class="no-highlight">20</i>&nbsp;                by privatizing constructor
+<i class="no-highlight">21</i>&nbsp;     */
+<b class="fc"><i class="no-highlight">22</i>&nbsp;    private static Connection conn = null;</b>
+<i class="no-highlight">23</i>&nbsp;
+<i class="no-highlight">24</i>&nbsp;    public static Connection getConnection() {
+<i class="no-highlight">25</i>&nbsp;        /*
+<i class="no-highlight">26</i>&nbsp;        establishes new connection if one doesn&#39;t exist,
+<i class="no-highlight">27</i>&nbsp;        otherwise return the current connection
+<i class="no-highlight">28</i>&nbsp;
+<i class="no-highlight">29</i>&nbsp;        Credentials: url (endpoint), username, password
+<i class="no-highlight">30</i>&nbsp;         */
+<b class="fc"><i class="no-highlight">31</i>&nbsp;        if (conn == null) {</b>
+<i class="no-highlight">32</i>&nbsp;            // establish new connection
+<b class="fc"><i class="no-highlight">33</i>&nbsp;            Properties props = new Properties();</b>
+<i class="no-highlight">34</i>&nbsp;            try {
+<i class="no-highlight">35</i>&nbsp;                //get path to connection.properties in resources folder
+<b class="fc"><i class="no-highlight">36</i>&nbsp;                URL res = JDBCConnection.class.getClassLoader().getResource(&quot;connection.properties&quot;);</b>
+<b class="fc"><i class="no-highlight">37</i>&nbsp;                File file = Paths.get(res.toURI()).toFile();</b>
+<b class="fc"><i class="no-highlight">38</i>&nbsp;                String absolutePath = file.getAbsolutePath();</b>
+<i class="no-highlight">39</i>&nbsp;                //System.out.println(absolutePath);
+<b class="fc"><i class="no-highlight">40</i>&nbsp;                InputStream input = new FileInputStream(absolutePath);</b>
+<i class="no-highlight">41</i>&nbsp;
+<b class="fc"><i class="no-highlight">42</i>&nbsp;                props.load(input);</b>
+<i class="no-highlight">43</i>&nbsp;                // props.load(new FileReader(&quot;src/main/resources/connection.properties&quot;));
+<i class="no-highlight">44</i>&nbsp;
+<b class="fc"><i class="no-highlight">45</i>&nbsp;                String endpoint = props.getProperty(&quot;endpoint&quot;);</b>
+<i class="no-highlight">46</i>&nbsp;                //URL Format (Postgresql JDBC)
+<i class="no-highlight">47</i>&nbsp;                // jdbc:postgresql://[endpoint]/[database]
+<b class="fc"><i class="no-highlight">48</i>&nbsp;                String url = &quot;jdbc:postgresql://&quot; + endpoint + &quot;/postgres&quot;;</b>
+<b class="fc"><i class="no-highlight">49</i>&nbsp;                String username = props.getProperty(&quot;username&quot;);</b>
+<b class="fc"><i class="no-highlight">50</i>&nbsp;                String password = props.getProperty(&quot;password&quot;);</b>
+<i class="no-highlight">51</i>&nbsp;
+<b class="fc"><i class="no-highlight">52</i>&nbsp;                conn = DriverManager.getConnection(url, username, password);</b>
+<i class="no-highlight">53</i>&nbsp;
+<b class="nc"><i class="no-highlight">54</i>&nbsp;            } catch (IOException | SQLException | URISyntaxException e) {</b>
+<b class="nc"><i class="no-highlight">55</i>&nbsp;                e.printStackTrace();</b>
+<b class="fc"><i class="no-highlight">56</i>&nbsp;            }</b>
+<i class="no-highlight">57</i>&nbsp;        }
+<b class="fc"><i class="no-highlight">58</i>&nbsp;        return conn;</b>
+<i class="no-highlight">59</i>&nbsp;    }
+<i class="no-highlight">60</i>&nbsp;}
+</div>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+        var codeBlock = document.getElementById('sourceCode');
+
+        if (codeBlock) {
+            hljs.highlightBlock(codeBlock);
+        }
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2022-02-01 10:00</div>
+</div>
+</body>
+</html>

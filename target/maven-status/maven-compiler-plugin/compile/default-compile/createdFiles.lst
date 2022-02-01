@@ -1,0 +1,10 @@
+revature\orm\testing\logging\MyLogger.class
+revature\orm\connection\JDBCConnection.class
+revature\orm\annotation\Entity.class
+revature\orm\testing\app\test.class
+revature\orm\annotation\PrimaryKey.class
+revature\orm\annotation\Serial.class
+revature\orm\testing\models\School.class
+revature\orm\annotation\ForeignKey.class
+revature\orm\testing\models\Student.class
+revature\orm\entitymanager\DBTable.class

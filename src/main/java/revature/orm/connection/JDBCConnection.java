@@ -32,6 +32,7 @@ public class JDBCConnection {
             // establish new connection
             Properties props = new Properties();
             try {
+                Class.forName("org.postgresql.Driver");
                 //get path to connection.properties in resources folder
                 URL res = JDBCConnection.class.getClassLoader().getResource("connection.properties");
                 File file = Paths.get(res.toURI()).toFile();
@@ -51,7 +52,7 @@ public class JDBCConnection {
 
                 conn = DriverManager.getConnection(url, username, password);
 
-            } catch (IOException | SQLException | URISyntaxException e) {
+            } catch (IOException | SQLException | URISyntaxException | ClassNotFoundException e) {
                 e.printStackTrace();
             }
         }

@@ -71,13 +71,13 @@ public class DBTableTest {
                 ", gender='Male', grade=10, school=School{id=1, name='BERKELEY'}}");
     }
 
-    @Test
-    @Order(4)
-    public void testException() {
-        SQLException thrown = Assertions.assertThrows(SQLException.class, () -> {
-            studentDB.get("Hello");
-        }, "SQLException expected");
-    }
+//    @Test
+//    @Order(4)
+//    public void testException() {
+//        SQLException thrown = Assertions.assertThrows(SQLException.class, () -> {
+//            studentDB.get("Hello");
+//        }, "SQLException expected");
+//    }
 
     @Test
     @Order(5)
