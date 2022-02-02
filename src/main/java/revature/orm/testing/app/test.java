@@ -17,7 +17,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class test {
-    public static void main(String[] args) throws SQLException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, ClassNotFoundException, NoSuchFieldException, InstantiationException, ParseException {
+    public static void main(String[] args){
         //Testing Create, addForeignKey, checkField()
         DBTable<Student> studentDB = new DBTable<>(Student.class);
         //Testing insertInto()

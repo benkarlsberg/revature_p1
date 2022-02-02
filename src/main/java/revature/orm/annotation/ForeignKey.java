@@ -1,6 +1,5 @@
 package revature.orm.annotation;
 
-import revature.orm.testing.models.School;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
