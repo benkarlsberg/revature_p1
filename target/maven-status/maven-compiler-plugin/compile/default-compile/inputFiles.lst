@@ -4,7 +4,6 @@ D:\Revature 2021 Training\Revature_p1\revature_p1\src\main\java\revature\orm\ann
 D:\Revature 2021 Training\Revature_p1\revature_p1\src\main\java\revature\orm\connection\JDBCConnection.java
 D:\Revature 2021 Training\Revature_p1\revature_p1\src\main\java\revature\orm\entitymanager\DBTable.java
 D:\Revature 2021 Training\Revature_p1\revature_p1\src\main\java\revature\orm\annotation\PrimaryKey.java
-D:\Revature 2021 Training\Revature_p1\revature_p1\src\main\java\revature\orm\testing\logging\MyLogger.java
 D:\Revature 2021 Training\Revature_p1\revature_p1\src\main\java\revature\orm\testing\models\Student.java
 D:\Revature 2021 Training\Revature_p1\revature_p1\src\main\java\revature\orm\testing\models\School.java
 D:\Revature 2021 Training\Revature_p1\revature_p1\src\main\java\revature\orm\annotation\Serial.java
