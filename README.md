@@ -1,4 +1,4 @@
-Annotation
+	Annotation
 		@ForeignKey(field=id): mark foreignKey field and specify to reference field.
 		@PrimaryKey: mark primaryKey field
 		@Serial: mark serial type, must be int
