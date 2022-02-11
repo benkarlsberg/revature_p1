@@ -1,4 +1,8 @@
-# Reference to Web Appication Github: 
+# Project 1 Custom ORM
+**Custom ORM (Object Relational Mapping System) that converts Java Code to PostgreSQL commands**<br>
+    by Thanh Nguyen and Benjamin Karlsberg<br>
+
+### Reference to Web Appication Github: 
 * https://github.com/ntluandt95/project1WebApp
 	
 ### Annotation
