@@ -1,4 +1,5 @@
-# Reference to Web Appication Github: https://github.com/ntluandt95/project1WebApp
+# Reference to Web Appication Github: 
+* https://github.com/ntluandt95/project1WebApp
 	
 ### Annotation
 * @ForeignKey(field=id): mark foreignKey field and specify to reference field.
